@@ -33,14 +33,21 @@ console.log(typeof NaN);
 // in case they are not valid. A graceful fail is, for example,
 // a special return value with a warning on console.log.
 
-function divideNumbers(a, b) {
+function divideNumbers2(a, b) {
     // Your code here.
+    if (Number.isFinite(a) && Number.isFinite(b) && (b != 0)){
+        return a / b;
+    }
+    else {
+        console.error("not applicable inputs!");
+        return 0;
+    }
 }
 
-divideNumbers('what', {});
-divideNumbers(1, 2);
+divideNumbers2('what', {});
+divideNumbers2(1, 2);
 
-divideNumbers(1, 0);
+divideNumbers2(1, 0);
 
 // EXERCISE 2. Catch errors.
 ////////////////////////////
@@ -63,13 +70,19 @@ judgePerson(brendan);
 // Here, instead of validating the input and preventing the error,
 // we catch it with a try and catch statement and print an error message.
 
-function judgePerson(person, cb) {
+function judgePerson2(person, cb) {
     // Your code here.
+    try {
+        let str = person.first + ' ' + person.last + cb()
+    console.log(str);
+      } catch (error) {
+        console.error(error);
+      }
 }
 
 brendan = { first: 'Brendan', last: 'Eich', year: 1961 };
-judgePerson(brendan);
-judgePerson(brendan, function() { return ' impacted my life.'; });
+judgePerson2(brendan);
+judgePerson2(brendan, function() { return ' impacted my life.'; });
 
 
 // Great work! You finish the fourth exercise sheet!
