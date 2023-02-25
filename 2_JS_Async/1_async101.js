@@ -31,7 +31,10 @@ timeout = setTimeout(() => console.log("Hello Bill!"), 2000);
 
 // c. Bonus. Now you want to repeat exercise 1.b, but this time you want 
 // to say hello to Bill without clearing the timeout.
-
+let name = "Brendan"
+let timeout = setTimeout(() => console.log(`Hello ${name}!`), 2000);
+name = "Bill"
+timeout = setTimeout(() => console.log(`Hello ${name}!`), 2000);
 // Hint: use a third variable to hold the name of the person.
 
 
@@ -41,7 +44,12 @@ timeout = setTimeout(() => console.log("Hello Bill!"), 2000);
 // a. You are pissed off because Bill did not say hello back. 
 // So you want to obsessively repeat "Hello Bill!" every second.
 
+var timesRun = 0;
 let interval = setInterval(() => {
+    timesRun += 1;
+    if(timesRun === 10){
+        clearInterval(interval);
+    }
     console.log('Hello Bill!');
 }, 1000);
 
