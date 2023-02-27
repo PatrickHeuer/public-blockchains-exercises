@@ -139,7 +139,7 @@ function yummy() {
 }
 
 let { openFridge, takeButter, takeBread, sliceBread, spreadButter } = 
-  require("./lib/actions_cb.js.js")(doAsync, doSilly, doThrow);
+  require("./lib/actions_cb.js")(doAsync, doSilly, doThrow);
 
 
 function breadAndButterCb() {
@@ -151,6 +151,22 @@ function breadAndButterCb() {
   console.log();
   
   // Write the async invocation code with callbacks here.
+  // openFridge(takeButter);
+  // takeButter();
+  //takeBread();
+  openFridge(() => {
+    takeButter(() => {
+      takeBread();
+      sliceBread(() => {
+        spreadButter();
+        yummy();
+      });
+    });
+  });
+  // sliceBread();
+  // spreadButter();
+
+  // yummy();
 }
 
 breadAndButterCb();
