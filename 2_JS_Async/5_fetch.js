@@ -35,13 +35,13 @@
 // After reading the SWAPI doc, adjust the query variable below accordingly.
 
 // Require fetch.
-const fetch = require("node-fetch");
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 // API address.
 const ENDPOINT = "https://swapi.dev/api/";
 
 // Change me.
-let query = 'people/1/';
+let query = 'people/1/?name="Luke Skywalker"';
 
 fetch(ENDPOINT + query)
   .then(res => {
@@ -71,15 +71,22 @@ fetch(ENDPOINT + query)
 
 // Let's do it again with the async/await pattern.
 
-const fetch = require("node-fetch");
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const ENDPOINT = "https://swapi.dev/api/";
 
 // Change me.
-let query = 'YOU_NEED_TO_CHANGE_THIS';
+let query = 'people/1/?name="Luke Skywalker"';
 
 // Hint: remember that await can be used only inside an async function.
 // If needed, you may create an anonimous async function.
+let fetchSkywalker = async () => { 
+  const promise = await fetch(ENDPOINT + query);
+  const response = await promise.json();
+  console.log(response)
+  return response;
+};
 
+fetchSkywalker().then(response => {response});
 
 // Exercise 3. Optional. Fetch them all.
 ////////////////////////////////////////
