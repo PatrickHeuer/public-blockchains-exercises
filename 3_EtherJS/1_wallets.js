@@ -119,7 +119,8 @@ exercise = 2;
 // Hint: you can copy .env_sample, modify its content and save it as .env.
  
 // See if it worked.
-console.log(process.env);
+
+// console.log(process.env);
 
 // exit();
 
@@ -143,7 +144,8 @@ if (process.env.METAMASK_ACCOUNT_1 == "") {
 else {
     console.log("Variable METAMASK_ACCOUNT_1 is there!")
 }
- exit();
+
+// exit();
 
 // b. Create an array with all the names of the variables written in the .env
 // file. Then print the lenght of the array.
@@ -152,6 +154,8 @@ else {
 exercise = '3b';
 
 // Your code here!
+varArr = Object.keys(process.env)
+console.log(varArr.length);
 
 // exit();
 
@@ -164,16 +168,29 @@ exercise = '3b';
 
 
 // Solution 1. forEach.
-variablesToCheck.forEach(v => {
+varArr.forEach(v => {
     // Your code here!
+    if (process.env[v] == ""){
+        console.log(v);
+    }
+    else{
+        
+    }
 });
 
 // Solution 2. For-loop.
 
 // Your code here!
 
+for(let i = 0; i < varArr.length; i++){
+    if (process.env[varArr[i]] == ""){
+        console.log(varArr[i]);
+    }
+    else{
+    }
+}
 
-// exit();
+ // exit();
 
 
 // Exercise 4. Create a Random Wallet.
@@ -186,6 +203,8 @@ const ethers = require("ethers");
 // and the mnenomic phrase.
 // Hint: ethers.Wallet.createRandom();
 
+const wallet = ethers.Wallet.createRandom();
+// console.log(wallet);
 
 // exit();
 
@@ -194,9 +213,9 @@ const ethers = require("ethers");
 
 exercise = '4b';
 
-let baseDevPath = "m/44'/60'/0'/0/";
+let baseDevPath = "m/44'/60'/0'/0/0";
 
-// Wait is the derication path? 
+// Wait is the derivation path? 
 // Basically, the mnemonic alone isn't enough to determine an address
 // and you need this extra bit of information. You may learn more here:
 // https://www.youtube.com/watch?v=tPCN3nDVzZI
@@ -207,9 +226,9 @@ let baseDevPath = "m/44'/60'/0'/0/";
 console.log("Derivation path:", wallet.path);
 
 // Your code here!
+console.log(wallet.path == baseDevPath)
 
-
-// exit();
+exit();
 
 // Exercise 5. Bonus. Create a Hierarchical Deterministic Wallet.
 /////////////////////////////////////////////////////////////////
