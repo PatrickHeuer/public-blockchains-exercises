@@ -13,7 +13,8 @@
 // Hint: As you did in file 1_wallet.
 
 // Your code here!
-
+require('dotenv').config();
+const ethers = require("ethers");
 
 // Exercise 1. Connect to Mainnet (a.k.a welcome async!).
 /////////////////////////////////////////////////////////
@@ -43,38 +44,52 @@
 
 
 // Your code here!
-
-
+const providerKey = process.env.INFURA_KEY;
+const mainnetInfuraUrl = `${process.env.INFURA_MAINNET_API_URL}${providerKey}`;
+const mainnetProvider = new ethers.JsonRpcProvider(mainnetInfuraUrl);
+const goerliInfuraUrl = `${process.env.INFURA_GOERLI_API_URL}${providerKey}`;
+const goerliProvider = new ethers.JsonRpcProvider(goerliInfuraUrl);
+console.log("URL:", mainnetInfuraUrl);
+console.log("URL:", goerliInfuraUrl);
 // b. Verify that the network's name is "mainnet" and the chain id that theis 1.
 
 // Hint: `getNetwork()`.
+
 
 // Hint2: the value of chain id returned by Ethers JS is of type "BigInt". 
 // As the name suggests, that is a very a data type capable of holding very
 // large (integer) numbers. Remember to cast it to Number for a nicer display.
 // https://javascript.info/bigint 
+let network1 = mainnetProvider.getNetwork();
+console.log(network1.name);
+console.log(Number(network1.chainId));
 
 // b1. Use the async/await pattern to do the job.
 
 
 // This is an asynchronous anonymous self-executing function. It is a ugly
 // construct, but it allows you to use await inside its body.
-(async () => {
-    
-    // Your code maybe here!
-
-})();
+// (async () => {
+//     // Your code maybe here!
+//     console.log("ASYNC/AWAIT !")
+//     let network2 = await mainnetProvider.getNetwork();
+//     console.log(network2.name);
+//     console.log(Number(network2.chainId));
+// })();
 
 // However, the async function could also be named, and the result is:
-const network = async () => {
+const network3 = async () => {
     
     // Your code here!
-
+    console.log("ASYNC/AWAIT !")
+    let network = await mainnetProvider.getNetwork();
+    console.log(network.name);
+    console.log(Number(network.chainId));
 };
 
 // which you can then call:
-
-// network();
+console.log("named:")
+network3();
 
 // The second (less compact) notation has the advantage that we can invoke
 // the code only when needed, so it is preferred in this exercise sheet.
@@ -82,6 +97,12 @@ const network = async () => {
 // b2. Bonus. Re-write the code above using the promise standard notation.
 
 // Promises.
+mainnetProvider.getNetwork().then(net => {
+    console.log("With Promise")
+    console.log(net.name);
+    console.log(Number(net.chainId));
+})
+
 
 // Checkpoint. We use `return` to terminate the execution insted
 // of process.exit(). Why?
@@ -99,10 +120,12 @@ const network = async () => {
 const blockNum = async () => {
     
     // Your code here!
-
+    let blockNr = await mainnetProvider.getBlockNumber();
+    console.log(blockNr)
 };
 
-// blockNum();
+blockNum();
+
 
 // b. The Ethereum mainnet is one of the most secure blockchains in the world.
 // The testnets of Ethereum are a bit less secure because they might have 
@@ -115,10 +138,14 @@ const blockNum = async () => {
 
 // Look up the current block number in Mainnet and Goerli.
 const blockDiff = async () => {
-
+    let mainBlockNr = await mainnetProvider.getBlockNumber();
+    let goerliBlockNr = await goerliProvider.getBlockNumber();
+    console.log("Mainnet length:", mainBlockNr);
+    console.log("Goerli length:", goerliBlockNr);
+    console.log("Diff:", mainBlockNr - goerliBlockNr)
 };
 
-// blockDiff();
+blockDiff();
 
 
 // Exercise 3. Block time.
@@ -180,6 +207,8 @@ const checkBlockTime = async (providerName = "mainnet", blocks2check = 3) => {
 
 // checkBlockTime("Goerli");
 
+// return;
+
 // b. Bonus. The checkBlockTime function can be rewritten more efficiently 
 // using the Observer pattern offer by EtherS JS and listening to the 
 // "block" event. See:
@@ -217,12 +246,17 @@ const checkBlockTime2 = async (providerName = "mainnet", blocks2check = 3) => {
 // Hint: pass `true` as second parameter to .getBlock(blockNumber, true).
 
 const blockInfo = async () => {
-    
     // Your code here!
-
+    let blockNumber = await mainnetProvider.getBlockNumber();
+    let block = await mainnetProvider.getBlock(blockNumber, true);
+    console.log("Amount of Transactions:", block.transactions.length);
+    let transaction = block.transactions[0];
+    let trReciept = await mainnetProvider.getTransactionReceipt(transaction);
+    console.log("First Transaction:", trReciept);
 };
 
 // blockInfo();
+
 
 // Exercise 5. ENS names.
 //////////////////////////
@@ -231,12 +265,12 @@ const blockInfo = async () => {
 // address.
 
 const ens = async () => {
-    
     // Your code here!
-
+    let adress = await goerliProvider.resolveName("unima.eth");
+    console.log("Adress:", adress);
+    return adress;
 };
-
-// ens();
+ens();
 
 
 // Exercise 6. Get ETH balance.
@@ -257,11 +291,17 @@ const ens = async () => {
 const balance = async (ensName = "unima.eth") => {
 
    // Your code here!
-
+   let adress = await goerliProvider.resolveName(ensName);
+   let balance = await goerliProvider.getBalance(adress);
+   let balanceEns = await goerliProvider.getBalance(ensName);
+   console.log("With ENS:", ethers.formatEther(balanceEns));
+   console.log(ethers.formatEther(balance));
 };
 
-// balance("vitalik.eth");
+// balance("unima.eth");
 
+// balance("vitalik.eth");
+// balance("goerligambler.eth");
 
 // Exercise 7. Get ERC20 Balance.
 /////////////////////////////////
@@ -273,9 +313,10 @@ const balance = async (ensName = "unima.eth") => {
 // the balance of.
 
 // First, we need to know the address of the smart contract. We can use the 
-// LINK contract.
+// LINK contract.   "0x326C977E6efc84E512bB9C30f76E30c160eD06FB"
 const linkAddress = '0x326c977e6efc84e512bb9c30f76e30c160ed06fb';
 
+// const { ethers, formatEther } = require('ethers');
 // At the address, there is only bytecode. So we need to tell Ethers JS, what
 // methods can be invoked. To do so, we pass the Application Binary Interface
 // (ABI) of the contract, available at Etherscan. For your convenience, 
@@ -289,12 +330,21 @@ const linkABI = require('./link_abi.json');
 // Hint2: want to try it with your own address? Get some LINK ERC20 tokens here: 
 // https://faucets.chain.link/goerli
 
-const link = async () => {
+
+const link = async (ens) => {
    
     // Your code here!
+    let adress = await goerliProvider.resolveName(ens);
+    let linkContract = new ethers.Contract(linkAddress, linkABI, goerliProvider);
+    console.log(await linkContract.name());
+    console.log(await linkContract.symbol());
+    let linkBalance = await linkContract.balanceOf(ens);
+    console.log(ethers.formatEther(linkBalance));
+    
 };
 
 
-// link();
-
-
+link("unima.eth");
+link("vitalik.eth");
+link("goerligambler.eth");
+return;
