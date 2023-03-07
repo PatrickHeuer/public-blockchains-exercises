@@ -7,6 +7,10 @@ typechain-types
 package-lock.json
 package.json
 
+# Not yet
+4_Hardhat*
+5_Solidity*
+
 #Hardhat files
 cache
 artifacts
