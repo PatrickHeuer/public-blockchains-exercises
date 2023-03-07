@@ -20,10 +20,15 @@
 // Hint: As you did in file 1_wallet and 2_provider.
 
 // Your code here!
+require('dotenv').config();
+const ethers = require("ethers");
 
 // b. Create a Goerli provider.
 
 // Your code here!
+const providerKey = process.env.INFURA_KEY;
+const goerliInfuraUrl = `${process.env.INFURA_GOERLI_API_URL}${providerKey}`;
+const goerliProvider = new ethers.JsonRpcProvider(goerliInfuraUrl);
 
 // Exercise 1. Create a Signer.
 ///////////////////////////////
