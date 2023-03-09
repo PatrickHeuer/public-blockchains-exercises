@@ -45,16 +45,19 @@ const goerliProvider = new ethers.JsonRpcProvider(goerliInfuraUrl);
 // Hint2: if you get an error here, check that the private key begins with "0x".
 
 // Your code here!
+let signer = new ethers.Wallet(process.env.METAMASK_1_PRIVATE_KEY);
+console.log(signer.address);
 
 // Exercise 2. Sign something.
 //////////////////////////////
 
 const sign = async (message = 'Hello world') => {
-    
     // Your code here!
+    let signedMessage = await signer.signMessage(message);
+    console.log(signedMessage);
 };
 
-// sign();
+sign();
 
 // Exercise 3. Connect to the blockchain. 
 /////////////////////////////////////////
@@ -68,9 +71,12 @@ const sign = async (message = 'Hello world') => {
 const connect = async() => {
     
     // Your code here!
+    let conSigner = await signer.connect(goerliProvider);
+    let nonce = await conSigner.getNonce();
+    console.log("Nonce:", nonce);
 };
 
-// connect();
+connect();
 
 // c. Replace the signer created above at exercise 1 with one that takes the 
 // Goerli provider as second parameter. This is necessary even
@@ -79,13 +85,13 @@ const connect = async() => {
 // and the remaning of the exercises. If unclear, just check the solution :)
 
 // Replace the signer created above.
-
-
+let connectedSigner = new ethers.Wallet(process.env.METAMASK_1_PRIVATE_KEY, goerliProvider);
+console.log("Connected:", connectedSigner);
 
 // Exercise 4. Send a transaction.
 //////////////////////////////////
 
-// The time has come to send a transaction programmatically! 
+// The time has come to send a transaction programmatically!
 
 // a. Send some Ether from one of your accounts to another one using the
 // method `sendTransaction()`. Obtain the transaction id and check on Etherscan
@@ -100,14 +106,26 @@ const connect = async() => {
 // Hint2: `formatEther()` can print a nicer balance.
 
 const account2 = process.env.METAMASK_2_ADDRESS;
+console.log(account2);
 
 const sendTransaction = async () => {
 
     // Your code here!
+    const unsignedTransaction = {
+        to: account2,
+        value: ethers.parseEther("0.01"),
+    };
+    let tx = await connectedSigner.sendTransaction(unsignedTransaction);
+    // console.log("Transaction:", tx);
+    console.log('Transaction is in the mempool...');
+    await tx.wait();
+
+    console.log('Transaction mined!');
+    console.log("Transaction:", tx);
+
 };
 
 // sendTransaction();
-
 
 // Exercise 5. Meddling with Gas.
 /////////////////////////////////
@@ -173,6 +191,22 @@ const sendTransaction = async () => {
 const checkGasPrices = async () => {
 
     // Your code here!
+    const transaction = {
+        to: account2,
+        value: ethers.parseEther("0.01"),
+    };
+    let tx = await connectedSigner.populateTransaction(transaction);
+
+    console.log("Transaction:", tx);
+    let feeData = await goerliProvider.getFeeData();
+    console.log("Fee Data:", feeData);
+
+    // c
+    let latest = await goerliProvider.getBlock("latest");
+    let maxFee = (ethers.formatUnits(latest.baseFeePerGas, "gwei") * 2) + (ethers.formatUnits(feeData.maxPriorityFeePerGas, "gwei") * 1);
+    console.log(typeof (ethers.formatUnits(latest.baseFeePerGas, "gwei") * 2));
+    console.log(typeof (ethers.formatUnits(feeData.maxPriorityFeePerGas, "gwei") * 1));
+    console.log("MaxFeePerGas:", maxFee);
 
 };
 
@@ -195,6 +229,23 @@ const checkGasPrices = async () => {
 const sendCheaperTransaction = async () => {
 
     // Your code here!
+    let feeData = await goerliProvider.getFeeData();
+    let maxFeePerGas = (ethers.formatUnits(feeData.maxFeePerGas, "wei")* 1);
+    console.log("MaxFee:", maxFeePerGas);
+    let reduced = maxFeePerGas - 5;
+
+    const unsignedTransaction = {
+        to: account2,
+        value: ethers.parseEther("0.01"),
+        maxFeePerGas: reduced,
+    };
+    let tx = await connectedSigner.sendTransaction(unsignedTransaction);
+    // console.log("Transaction:", tx);
+    console.log('Transaction is in the mempool...');
+    await tx.wait();
+
+    console.log('Transaction mined!');
+    console.log("Transaction:", tx);
 
 };
 
@@ -235,11 +286,30 @@ const sendCheaperTransaction = async () => {
 const resubmitTransaction = async () => {
 
     // Your Code here!
+    let nonce = await connectedSigner.getNonce();
+    console.log("Nonce:",nonce);
+    let feeData = await goerliProvider.getFeeData();
+    let maxFeePerGas = (ethers.formatUnits(feeData.maxFeePerGas, "wei")* 1);
+    console.log("MaxFee:", maxFeePerGas);
+    const unsignedTransaction = {
+        to: account2,
+        value: ethers.parseEther("0.01"),
+        gasPrice: maxFeePerGas,
+        nonce: nonce
+    };
+    
+    let tx = await connectedSigner.sendTransaction(unsignedTransaction);
+    // console.log("Transaction:", tx);
+    console.log('Transaction is in the mempool...');
+    await tx.wait();
+
+    console.log('Transaction mined!');
+    console.log("Transaction:", tx);
 
 };
 
 resubmitTransaction();
-
+return;
 
 // c. Bonus. Repeat a+c., but this time cancel the transaction. How? Send a
 // transaction with the same nonce with zero value and recipient address
