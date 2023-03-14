@@ -52,6 +52,7 @@ let hhPrivateKey = "de9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b
 // Your code here!
 let connectedSigner = new ethers.Wallet(hhPrivateKey, hardhatProvider);
 console.log("Signer:", connectedSigner);
+
 // b. Print the next nonce necessary to send a transaction.
 // Hint: .getNonce()
 
