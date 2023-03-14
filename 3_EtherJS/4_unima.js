@@ -8,7 +8,8 @@
 // Hint: As you did multiple times now.
 
 // Your code here!
-
+require('dotenv').config();
+const ethers = require("ethers");
 
 // Exercise 1. Create a JSON RPC Provider for the (not) UniMa Blockchain.
 /////////////////////////////////////////////////////////////////////////
@@ -27,6 +28,9 @@
 // Hint: only accessible within UniMa network.
 
 // Your code here!
+const NUMAProvider = new ethers.JsonRpcProvider(process.env.NOT_UNIMA_URL_1);
+console.log(NUMAProvider);
+
 
 // Exercise 2. Let's query the provider.
 ////////////////////////////////////////
@@ -37,11 +41,17 @@
 const networkInfo = async () => {
     
     // Your code here!
+    let network = await NUMAProvider.getNetwork();
+    console.log(network);
+
+    console.log("Name:", network.name);
+    console.log("Chain ID:", network.chainId);
+    let blockNr = await NUMAProvider.getBlockNumber();
+    console.log("Block Number:", blockNr);
 
 };
 
-// networkInfo();
-
+networkInfo();
 
 // Exercise 3. Connect a signer to the (not) UniMa blockchain.
 //////////////////////////////////////////////////////////////
@@ -49,6 +59,9 @@ const networkInfo = async () => {
 // a. Use the same non-sensitive private key used in 3_signer.js.
 
 // Your code here!
+let connectedSigner = new ethers.Wallet(process.env.METAMASK_1_PRIVATE_KEY, NUMAProvider);
+console.log("Signer:", connectedSigner);
+
 
 // b. Print the next nonce necessary to send a transaction.
 // Hint: .getNonce()
@@ -56,12 +69,16 @@ const networkInfo = async () => {
 const getNonce = async() => {
     
     // Your code here!
+    let nonce = await connectedSigner.getNonce();
+    console.log("Nonce:", nonce);
 };
 
-// getNonce();
+getNonce();
 
 // Checkpoint. Is the nonce in the (not) Unima blockchain different
 // than in Goerli?
+
+//Yes, because the network has not been used for as many transactions as the Goerli Network by me
 
 
 // Exercise 4. Check gas.
@@ -76,10 +93,11 @@ const getNonce = async() => {
 const checkBalance = async () => {
 
    // Your code here!
-
+   let balance = await NUMAProvider.getBalance(connectedSigner.address);
+   console.log("Balance:", ethers.formatUnits(balance));
 };
 
-// checkBalance();
+checkBalance();
 
 // Exercise 5. Send a transaction.
 //////////////////////////////////
@@ -91,9 +109,22 @@ const account2 = process.env.METAMASK_2_ADDRESS;
 const sendTransaction = async () => {
 
    // Your code here!
+   const unsignedTransaction = {
+    to: account2,
+    value: ethers.parseEther("1"),
+    };
+    let tx = await connectedSigner.sendTransaction(unsignedTransaction);
+    console.log('Transaction is in the mempool...');
+    await tx.wait();
+
+    console.log('Transaction mined!');
+    console.log("Transaction:", tx);
 };
 
-// sendTransaction();
+sendTransaction();
+return;
 
 // Checkpoint. Can you send your ETH from NUMA to Goerli?
+
+// No, that shouldn't be possible
 

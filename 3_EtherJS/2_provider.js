@@ -61,6 +61,7 @@ console.log("URL:", goerliInfuraUrl);
 // large (integer) numbers. Remember to cast it to Number for a nicer display.
 // https://javascript.info/bigint 
 let network1 = mainnetProvider.getNetwork();
+console.log(network1);
 console.log(network1.name);
 console.log(Number(network1.chainId));
 
