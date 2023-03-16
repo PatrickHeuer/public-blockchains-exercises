@@ -59,10 +59,11 @@ console.log("Signer:", connectedSigner);
 const getNonce = async() => {
 
     // Your code here!
+    let nonce = await connectedSigner.getNonce();
+    console.log("Nonce:", nonce);
 };
 
-// getNonce();
-return;
+getNonce();
 
 // Exercise 4. Check gas.
 /////////////////////////
@@ -76,9 +77,11 @@ return;
 const checkBalance = async () => {
 
     // Your code here!
+    let balance = await hardhatProvider.getBalance(connectedSigner.address);
+   console.log("Balance:", ethers.formatUnits(balance));
 };
 
-// checkBalance();
+checkBalance();
 
 // Exercise 5. Send a transaction.
 //////////////////////////////////
@@ -90,7 +93,17 @@ const account2 = process.env.METAMASK_2_ADDRESS;
 const sendTransaction = async () => {
 
     // Your code here!
+    const unsignedTransaction = {
+        to: account2,
+        value: ethers.parseEther("1"),
+        };
+        let tx = await connectedSigner.sendTransaction(unsignedTransaction);
+        console.log('Transaction is in the mempool...');
+        await tx.wait();
+    
+        console.log('Transaction mined!');
+        console.log("Transaction:", tx);
 };
 
-// sendTransaction();
-
+sendTransaction();
+return;

@@ -2,17 +2,15 @@
 pragma solidity ^0.8.9;
 
 // Uncomment this line to use console.log
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
-contract Lock {
+contract Lock2 {
     uint public unlockTime;
     address payable public owner;
 
     event Withdrawal(uint amount, uint when);
 
     constructor(uint _unlockTime) payable {
-        console.log("Block Time:", block.timestamp);
-        console.log("Unlock Time:", _unlockTime);
         require(
             block.timestamp < _unlockTime,
             "Unlock time should be in the future"
