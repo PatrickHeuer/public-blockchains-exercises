@@ -46,4 +46,7 @@
 
 // You know how to do it.
 
+//   - insert network to hardhat config 
+//   - run hardhat and specify network
+
 // However, there is no block explorer yet...

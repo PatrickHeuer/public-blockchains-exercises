@@ -81,7 +81,7 @@ console.log("Version wrapped ethers.js:", hre.ethers.version);
 //       --> It is stated in the console after deploying the contract
 const contractName = "Lock2";
 // const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const contractAddress = "0xaaBf932Cb7838F54b0B7Fc67e81d1a30c76C8F22";
 
 
 // Let's continue inside the async main function (the recommended Hardhat
@@ -227,7 +227,7 @@ async function main() {
   };
   
   console.log("WITHDRAW AGAIN")
-  await withdrawAgain();
+  // await withdrawAgain();
 
 
   // Exercise 4. Bonus. Connect with another address (WRITE).

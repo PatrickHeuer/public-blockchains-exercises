@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
+// my university contract to test out on thee goerli testnet
 
 contract Lock2 {
     uint public unlockTime;
