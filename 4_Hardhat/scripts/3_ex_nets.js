@@ -37,7 +37,7 @@
 ////////////////////////////////////////////////////////
 
 // Make the source code of your contract verified:
-// https://hardhat.org/hardhat-runner/docs/guides/verifying
+// https://hardhat.org/hardhat-runner/docs/gnpx uides/verifying
 
 // Check Etherscan again.
 
