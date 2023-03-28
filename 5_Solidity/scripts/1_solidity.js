@@ -124,7 +124,9 @@
 // Hint: https://solidity-by-example.org/immutable/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+const { getAddress } = require("ethers");
 const hre = require("hardhat");
+require('dotenv').config();
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 let contractName2 = "Lock2";
@@ -134,7 +136,7 @@ let contractName3 = "Lock3";
 let contractAddress3 = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
 
 let contractName4 = "Lock4";
-let contractAddress4 = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+let contractAddress4 = "0x95401dc811bb5740090279Ba06cfA8fcF6113778";
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -375,7 +377,7 @@ async function getAllEvents() {
 // d. Write two utility methods to display:
 // - the amount received by each owner (i.e., before and after withdrawing)
 // - the number of owners and the amount of Ether left in the contract.
-contractAddress4 = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+
 
 async function mappings() {
     console.log("Advanced. Exercise 5: Mappings (and payable)");
@@ -384,19 +386,78 @@ async function mappings() {
     const [mySigner, myContract] = await getContractAndSigner(contractName4, contractAddress4);
     console.log("Signer:", mySigner.address);
     console.log("Contract:", myContract.address);
+
+    let ownerNum = await myContract.numOwners();
+    console.log("Number of Owners:", ownerNum);
+    let ownerPayable = await myContract.getOwner(mySigner.address);
+    console.log("Owner payable:", ownerPayable);
+
+    const [mySigner1, myContract1] = await getContractAndSigner(contractName4, contractAddress4, 1);
+    const [mySigner2, myContract2] = await getContractAndSigner(contractName4, contractAddress4, 2);
+    const [mySigner3, myContract3] = await getContractAndSigner(contractName4, contractAddress4, 3);
+    const [mySigner4, myContract4] = await getContractAndSigner(contractName4, contractAddress4, 4);
+
+    console.log("Add new Owners");
+    await myContract.addOwner(mySigner1.address);
+    await myContract.addOwner(mySigner2.address);
+    await myContract2.addOwner(mySigner3.address);
+    await myContract3.addOwner(mySigner4.address);
+
+
+    /*
+    let rawBalanceBefore = await mySigner.getBalance();
+    let balanceBefore = ethers.utils.formatEther(rawBalanceBefore);
+    await myContract.withdraw();
+    let rawBalanceAfter = await mySigner.getBalance();
+    let balanceAfter = ethers.utils.formatEther(rawBalanceAfter);
+    console.log("WITHDRAWN:", balanceAfter - balanceBefore);
+
+    
+    ownerNum = await myContract.numOwners();
+    let oldOwnerPayable = await myContract.getOwner(mySigner.address);
+    let newOwnerPayable = await myContract.getOwner(mySigner1.address);
+    console.log("Number of Owners:", ownerNum);
+    console.log("Owner Payable (old Owner):", oldOwnerPayable);
+    console.log("Owner Payable (new Owner):", newOwnerPayable);
+
+    let ownerNum4 = await myContract4.numOwners();
+    console.log("Number of Owners 4:", ownerNum4);*/
+
+
+    await getContractStatus(myContract);
+
+    await checkBalanceBeforeAfter(mySigner, myContract);
+    await checkBalanceBeforeAfter(mySigner1, myContract1);
+    await checkBalanceBeforeAfter(mySigner2, myContract2);
+    await checkBalanceBeforeAfter(mySigner3, myContract3);
+    await checkBalanceBeforeAfter(mySigner4, myContract4);
 }
 
 const checkBalanceBeforeAfter = async (signer, lockContract) => {
     // Check the balance change for signer.
   
     // Your code here!
-    
+    let b1 = await signer.getBalance();
+    let tx = await lockContract.withdraw();
+    await tx.wait();
+    let b2 = await signer.getBalance();
+    // With Ethers v5 we need to explicitely cast to BigInt. 
+    let diff = BigInt(b2) - BigInt(b1);
+    b2 = ethers.utils.formatEther(diff);
+    console.log('The balance after withdrawing is net +' + b2 + ' ETH');
+  
+    await getContractStatus(lockContract);
 };
 
 const getContractStatus = async lockContract => {
     // Report info about contract.
   
     // Your code here!
+    let leftInContract = await hre.ethers.provider.getBalance(lockContract.address);
+    leftInContract = ethers.utils.formatEther(leftInContract);
+    let numOwners = await lockContract.numOwners();
+    console.log('On lock there is +' + leftInContract + ' ETH left and ' + 
+                    numOwners + " owners now");
 };
 
 mappings();

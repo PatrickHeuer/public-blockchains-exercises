@@ -9,6 +9,8 @@ contract Lock4 {
     address payable public owner;
     string constant public name = "My Name";
     uint256 public blockNumber;
+    uint constant canWithdraw = 1;
+
     mapping (address => uint) public ownersMap;
     uint public numOwners = 0;
 
@@ -23,15 +25,20 @@ contract Lock4 {
         addOwner(msg.sender);
     }
 
-    function addOwner(address addr)  private {
+    function addOwner(address addr)  public {
         // Update the value at this address
         
-        if (ownersMap[addr] <= 0){      // if owner not registered yet
+        if (ownersMap[addr]== 0){      // if owner not registered yet
             numOwners += 1;
-            ownersMap[addr] = numOwners;
+            ownersMap[addr] = 1;
         }
         return;
     }
+
+    function getOwner(address addr) public view returns (uint){
+        return ownersMap[addr];
+    }
+
     function withdraw() public {
         // Uncomment this line, and the import of "hardhat/console.sol", to print a log in your terminal
         console.log("Unlock time is %o and block timestamp is %o", unlockTime, block.timestamp);
@@ -39,10 +46,23 @@ contract Lock4 {
         emit WithdrawalAttempt(owner);
 
         require(block.timestamp >= unlockTime, "You can't withdraw yet");
-        require(msg.sender == owner, "You aren't the owner");
+        // require(msg.sender == owner, "You aren't the owner");
+        // require(ownersMap[owner] == canWithdraw, "Cannot withdraw more than once!!!");
 
         emit Withdrawal(address(this).balance, block.timestamp);
+        uint toWithdraw = address(this).balance / numOwners;
 
-        owner.transfer(address(this).balance);
+        console.log("Balance:", address(this).balance / (10**18));
+        console.log("withdrawable:", toWithdraw / (10**18)); // convert wei to ether
+
+        if (ownersMap[owner] == canWithdraw){
+            ownersMap[owner] += 1;
+            owner.transfer(toWithdraw);
+            numOwners -= 1;
+        } else {
+            console.log("Cannot withdraw more than once!!!");
+        }
+        
+        
     }
 }

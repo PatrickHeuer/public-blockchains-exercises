@@ -10,7 +10,7 @@ async function main() {
   const currentTimestampInSeconds = Math.round(Date.now() / 1000);
   const unlockTime = currentTimestampInSeconds + 60;
 
-  const lockedAmount = hre.ethers.utils.parseEther("0.1");
+  const lockedAmount = hre.ethers.utils.parseEther("1");
 
   const Lock = await hre.ethers.getContractFactory("Lock4");
   const lock = await Lock.deploy({ value: lockedAmount });
